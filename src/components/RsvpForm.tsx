@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Spinner from "@/components/Spinner";
 import type { EventTheme, RsvpCounts, RsvpStatus } from "@/lib/types";
 
 interface RsvpFormProps {
@@ -186,7 +187,7 @@ export default function RsvpForm({
                   key={opt.value}
                   type="button"
                   onClick={() => setStatus(opt.value)}
-                  className={`rounded-xl py-3 text-sm font-bold transition ${
+                  className={`rounded-xl py-3 text-sm font-bold transition hover:-translate-y-0.5 ${
                     status === opt.value
                       ? styles.selectedButton(opt.value)
                       : styles.unselectedButton
@@ -218,8 +219,9 @@ export default function RsvpForm({
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full rounded-xl py-3 font-bold transition ${styles.submitButton}`}
+            className={`w-full flex items-center justify-center gap-2 rounded-xl py-3 font-bold shadow-md hover:-translate-y-0.5 hover:shadow-lg transition disabled:translate-y-0 ${styles.submitButton}`}
           >
+            {submitting && <Spinner />}
             {submitting ? "送信中..." : "この内容で回答する"}
           </button>
         </form>

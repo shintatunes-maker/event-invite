@@ -3,13 +3,32 @@
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Spinner from "@/components/Spinner";
 import { formatEventDate } from "@/lib/format";
 import type { PublicEventRecord, ResponseRecord, RsvpCounts } from "@/lib/types";
 
-const STATUS_LABELS: Record<string, { label: string; emoji: string }> = {
-  yes: { label: "参加", emoji: "🙆" },
-  maybe: { label: "未定", emoji: "🤔" },
-  no: { label: "不参加", emoji: "🙅" },
+const STATUS_STYLES: Record<
+  string,
+  { label: string; emoji: string; badge: string; pill: string }
+> = {
+  yes: {
+    label: "参加",
+    emoji: "🙆",
+    badge: "bg-pink-50 text-pink-700",
+    pill: "bg-pink-100 text-pink-700",
+  },
+  maybe: {
+    label: "未定",
+    emoji: "🤔",
+    badge: "bg-amber-50 text-amber-700",
+    pill: "bg-amber-100 text-amber-700",
+  },
+  no: {
+    label: "不参加",
+    emoji: "🙅",
+    badge: "bg-neutral-100 text-neutral-500",
+    pill: "bg-neutral-200 text-neutral-600",
+  },
 };
 
 export default function ManagePage() {
@@ -105,7 +124,10 @@ export default function ManagePage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
-        <p className="text-neutral-500">読み込み中...</p>
+        <div className="flex items-center gap-2 text-neutral-500">
+          <Spinner />
+          読み込み中...
+        </div>
       </main>
     );
   }
@@ -143,10 +165,15 @@ export default function ManagePage() {
   if (!event || !counts) return null;
 
   return (
-    <main className="min-h-screen bg-neutral-50 px-4 py-10 sm:py-16">
-      <div className="mx-auto w-full max-w-2xl">
+    <main className="relative min-h-screen overflow-hidden bg-neutral-50 px-4 py-10 sm:py-16">
+      <div aria-hidden className="pointer-events-none absolute inset-0 select-none">
+        <div className="absolute -top-32 -right-32 h-80 w-80 rounded-full bg-pink-100/60 blur-3xl" />
+        <div className="absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-amber-100/50 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto w-full max-w-2xl">
         <div className="mb-6">
-          <p className="text-sm font-semibold text-neutral-400 mb-1">
+          <p className="text-sm font-semibold tracking-wide text-neutral-400 mb-1">
             幹事管理画面
           </p>
           <h1 className="text-2xl font-bold text-neutral-900">{event.title}</h1>
@@ -159,20 +186,20 @@ export default function ManagePage() {
           <Link
             href={`/event/${params.id}`}
             target="_blank"
-            className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-100"
+            className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition"
           >
             招待ページを見る
           </Link>
           <Link
             href={`/event/${params.id}/manage/edit?token=${token}`}
-            className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-100"
+            className="rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition"
           >
             イベント情報を編集
           </Link>
           {!confirmingDelete ? (
             <button
               onClick={() => setConfirmingDelete(true)}
-              className="rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
+              className="rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-red-50 transition"
             >
               イベントを削除
             </button>
@@ -182,8 +209,9 @@ export default function ManagePage() {
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="rounded-lg bg-red-600 px-3 py-1 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1 text-xs font-bold text-white hover:bg-red-700 disabled:opacity-50"
               >
+                {deleting && <Spinner className="h-3 w-3" />}
                 {deleting ? "削除中..." : "削除する"}
               </button>
               <button
@@ -202,19 +230,27 @@ export default function ManagePage() {
 
         <div className="rounded-2xl bg-white shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between flex-wrap gap-3">
-            <div>
-              <p className="text-sm font-semibold text-neutral-700">
-                プラン: {event.isPaid ? "有料(透かしなし)" : "無料(透かし表示中)"}
-              </p>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                ※デモ用の切り替えです。実際の決済連携は未実装です
-              </p>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{event.isPaid ? "💎" : "🔓"}</span>
+              <div>
+                <p className="text-sm font-semibold text-neutral-700">
+                  プラン: {event.isPaid ? "有料(透かしなし)" : "無料(透かし表示中)"}
+                </p>
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  ※デモ用の切り替えです。実際の決済連携は未実装です
+                </p>
+              </div>
             </div>
             <button
               onClick={handleTogglePaid}
               disabled={togglingPaid}
-              className="rounded-xl bg-neutral-900 px-4 py-2 text-sm font-bold text-white hover:bg-neutral-700 disabled:opacity-50"
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-white shadow-sm hover:-translate-y-0.5 hover:shadow-md transition disabled:opacity-50 disabled:translate-y-0 ${
+                event.isPaid
+                  ? "bg-neutral-700 hover:bg-neutral-600"
+                  : "bg-gradient-to-r from-amber-500 to-pink-500 hover:brightness-105"
+              }`}
             >
+              {togglingPaid && <Spinner className="h-3.5 w-3.5" />}
               {togglingPaid
                 ? "更新中..."
                 : event.isPaid
@@ -225,20 +261,22 @@ export default function ManagePage() {
         </div>
 
         <div className="rounded-2xl bg-white shadow-sm p-6 mb-6">
-          <div className="flex gap-4 mb-4">
-            <span className="text-sm font-semibold text-pink-600">
-              🙆 参加 {counts.yes}人
-            </span>
-            <span className="text-sm font-semibold text-yellow-600">
-              🤔 未定 {counts.maybe}人
-            </span>
-            <span className="text-sm font-semibold text-neutral-500">
-              🙅 不参加 {counts.no}人
-            </span>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {(["yes", "maybe", "no"] as const).map((status) => (
+              <span
+                key={status}
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${STATUS_STYLES[status].badge}`}
+              >
+                {STATUS_STYLES[status].emoji} {STATUS_STYLES[status].label} {counts[status]}人
+              </span>
+            ))}
           </div>
 
           {responses.length === 0 ? (
-            <p className="text-sm text-neutral-400">まだ回答がありません</p>
+            <div className="text-center py-8">
+              <p className="text-3xl mb-2">📭</p>
+              <p className="text-sm text-neutral-400">まだ回答がありません</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -251,19 +289,27 @@ export default function ManagePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {responses.map((r) => (
-                    <tr key={r.id} className="border-b border-neutral-50">
-                      <td className="py-2 pr-3 font-semibold text-neutral-800">
+                  {responses.map((r, i) => (
+                    <tr
+                      key={r.id}
+                      className={`border-b border-neutral-50 transition hover:bg-neutral-50 ${
+                        i % 2 === 1 ? "bg-neutral-50/50" : ""
+                      }`}
+                    >
+                      <td className="py-2.5 pr-3 font-semibold text-neutral-800">
                         {r.name}
                       </td>
-                      <td className="py-2 pr-3">
-                        {STATUS_LABELS[r.status]?.emoji}{" "}
-                        {STATUS_LABELS[r.status]?.label}
+                      <td className="py-2.5 pr-3">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[r.status]?.pill}`}
+                        >
+                          {STATUS_STYLES[r.status]?.emoji} {STATUS_STYLES[r.status]?.label}
+                        </span>
                       </td>
-                      <td className="py-2 pr-3 text-neutral-500">
+                      <td className="py-2.5 pr-3 text-neutral-500">
                         {r.comment || "-"}
                       </td>
-                      <td className="py-2 text-neutral-400 whitespace-nowrap">
+                      <td className="py-2.5 text-neutral-400 whitespace-nowrap">
                         {new Date(r.createdAt).toLocaleString("ja-JP")}
                       </td>
                     </tr>

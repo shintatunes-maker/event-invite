@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Spinner from "@/components/Spinner";
 import { THEME_OPTIONS } from "@/lib/themeOptions";
 import type { EventTheme } from "@/lib/types";
+
+const inputClass =
+  "w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200 hover:border-neutral-400";
 
 interface CreatedEvent {
   id: string;
@@ -114,7 +118,7 @@ export default function CreatePage() {
           <div className="flex flex-col gap-2 mb-6">
             <button
               onClick={() => copyText(shareUrl, setCopiedShare)}
-              className="w-full rounded-xl bg-neutral-900 text-white py-2.5 font-semibold hover:bg-neutral-700 transition"
+              className="w-full rounded-xl bg-neutral-900 text-white py-2.5 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition"
             >
               {copiedShare ? "コピーしました！" : "招待URLをコピー"}
             </button>
@@ -193,12 +197,17 @@ export default function CreatePage() {
                   key={opt.value}
                   type="button"
                   onClick={() => setTheme(opt.value)}
-                  className={`text-left rounded-xl border-2 overflow-hidden transition ${
+                  className={`relative text-left rounded-xl border-2 overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md ${
                     theme === opt.value
-                      ? "border-neutral-900"
+                      ? "border-neutral-900 shadow-sm"
                       : "border-transparent"
                   }`}
                 >
+                  {theme === opt.value && (
+                    <span className="absolute top-2 right-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-[10px] text-white">
+                      ✓
+                    </span>
+                  )}
                   <div className={`h-14 ${opt.preview}`} />
                   <div className="p-3 bg-white">
                     <p className="font-semibold text-sm text-neutral-900">
@@ -222,7 +231,7 @@ export default function CreatePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="〇〇さん誕生日会 / 忘年会"
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={60}
             />
           </div>
@@ -236,7 +245,7 @@ export default function CreatePage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+                className={inputClass}
               />
             </div>
             <div>
@@ -247,7 +256,7 @@ export default function CreatePage() {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+                className={inputClass}
               />
             </div>
           </div>
@@ -261,7 +270,7 @@ export default function CreatePage() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="居酒屋 〇〇 渋谷店"
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={100}
             />
           </div>
@@ -275,7 +284,7 @@ export default function CreatePage() {
               value={organizerName}
               onChange={(e) => setOrganizerName(e.target.value)}
               placeholder="山田 太郎"
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={40}
             />
           </div>
@@ -289,7 +298,7 @@ export default function CreatePage() {
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               placeholder="会費3000円、プレゼント不要です"
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={500}
             />
           </div>
@@ -299,8 +308,9 @@ export default function CreatePage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-xl bg-neutral-900 text-white py-3 font-bold hover:bg-neutral-700 transition disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-700 text-white py-3 font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition disabled:opacity-50 disabled:translate-y-0 disabled:shadow-md"
           >
+            {submitting && <Spinner />}
             {submitting ? "作成中..." : "招待ページを作成する"}
           </button>
         </form>

@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Spinner from "@/components/Spinner";
 import { THEME_OPTIONS } from "@/lib/themeOptions";
 import type { EventTheme } from "@/lib/types";
+
+const inputClass =
+  "w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200 hover:border-neutral-400";
 
 export default function EditEventPage() {
   const params = useParams<{ id: string }>();
@@ -104,7 +108,10 @@ export default function EditEventPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
-        <p className="text-neutral-500">読み込み中...</p>
+        <div className="flex items-center gap-2 text-neutral-500">
+          <Spinner />
+          読み込み中...
+        </div>
       </main>
     );
   }
@@ -152,12 +159,17 @@ export default function EditEventPage() {
                   key={opt.value}
                   type="button"
                   onClick={() => setTheme(opt.value)}
-                  className={`text-left rounded-xl border-2 overflow-hidden transition ${
+                  className={`relative text-left rounded-xl border-2 overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md ${
                     theme === opt.value
-                      ? "border-neutral-900"
+                      ? "border-neutral-900 shadow-sm"
                       : "border-transparent"
                   }`}
                 >
+                  {theme === opt.value && (
+                    <span className="absolute top-2 right-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-[10px] text-white">
+                      ✓
+                    </span>
+                  )}
                   <div className={`h-14 ${opt.preview}`} />
                   <div className="p-3 bg-white">
                     <p className="font-semibold text-sm text-neutral-900">
@@ -180,7 +192,7 @@ export default function EditEventPage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={60}
             />
           </div>
@@ -194,7 +206,7 @@ export default function EditEventPage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+                className={inputClass}
               />
             </div>
             <div>
@@ -205,7 +217,7 @@ export default function EditEventPage() {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+                className={inputClass}
               />
             </div>
           </div>
@@ -218,7 +230,7 @@ export default function EditEventPage() {
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={100}
             />
           </div>
@@ -231,7 +243,7 @@ export default function EditEventPage() {
               type="text"
               value={organizerName}
               onChange={(e) => setOrganizerName(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={40}
             />
           </div>
@@ -244,7 +256,7 @@ export default function EditEventPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full rounded-xl border border-neutral-300 px-4 py-2 outline-none focus:ring-2 focus:ring-neutral-400"
+              className={inputClass}
               maxLength={500}
             />
           </div>
@@ -254,8 +266,9 @@ export default function EditEventPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full rounded-xl bg-neutral-900 text-white py-3 font-bold hover:bg-neutral-700 transition disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-700 text-white py-3 font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition disabled:opacity-50 disabled:translate-y-0 disabled:shadow-md"
           >
+            {submitting && <Spinner />}
             {submitting ? "保存中..." : "変更を保存する"}
           </button>
         </form>
