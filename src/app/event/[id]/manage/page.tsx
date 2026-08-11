@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
 import { formatEventDate } from "@/lib/format";
+import { WATERMARK_REMOVAL_PRICE_JPY } from "@/lib/pricing";
 import type { PublicEventRecord, ResponseRecord, RsvpCounts } from "@/lib/types";
 
 const STATUS_STYLES: Record<
@@ -34,7 +35,10 @@ const STATUS_STYLES: Record<
 export default function ManagePage() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const token = searchParams.get("token") ?? "";
+  const checkoutSessionId = searchParams.get("checkout_session_id");
+  const checkoutCancelled = searchParams.get("checkout") === "cancelled";
 
   const [event, setEvent] = useState<PublicEventRecord | null>(null);
   const [responses, setResponses] = useState<ResponseRecord[]>([]);
@@ -44,7 +48,11 @@ export default function ManagePage() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
-  const [togglingPaid, setTogglingPaid] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
+  const [checkoutMessage, setCheckoutMessage] = useState<{
+    type: "success" | "info";
+    text: string;
+  } | null>(null);
 
   async function load() {
     setLoading(true);
@@ -76,6 +84,52 @@ export default function ManagePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id, token]);
 
+  useEffect(() => {
+    if (!token) return;
+
+    function cleanUrl() {
+      router.replace(`/event/${params.id}/manage?token=${token}`);
+    }
+
+    if (checkoutSessionId) {
+      (async () => {
+        try {
+          const res = await fetch(
+            `/api/events/${params.id}/checkout/confirm?session_id=${encodeURIComponent(checkoutSessionId)}`,
+            { headers: { "x-admin-token": token } },
+          );
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data?.error ?? "決済の確認に失敗しました");
+          }
+          if (data.paid) {
+            setEvent(data.event);
+            setCheckoutMessage({
+              type: "success",
+              text: "購入が完了しました。透かしが非表示になりました！",
+            });
+          } else {
+            setCheckoutMessage({
+              type: "info",
+              text: "決済が完了していません。時間をおいて再度お試しください。",
+            });
+          }
+        } catch (err) {
+          setCheckoutMessage({
+            type: "info",
+            text: err instanceof Error ? err.message : "決済の確認に失敗しました",
+          });
+        } finally {
+          cleanUrl();
+        }
+      })();
+    } else if (checkoutCancelled) {
+      setCheckoutMessage({ type: "info", text: "決済がキャンセルされました" });
+      cleanUrl();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutSessionId, checkoutCancelled, token]);
+
   async function handleDelete() {
     setDeleting(true);
     setError(null);
@@ -96,28 +150,22 @@ export default function ManagePage() {
     }
   }
 
-  async function handleTogglePaid() {
-    if (!event) return;
-    setTogglingPaid(true);
+  async function handlePurchase() {
+    setPurchasing(true);
     setError(null);
     try {
-      const res = await fetch(`/api/events/${params.id}/upgrade`, {
+      const res = await fetch(`/api/events/${params.id}/checkout`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-token": token,
-        },
-        body: JSON.stringify({ isPaid: !event.isPaid }),
+        headers: { "x-admin-token": token },
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.error ?? "更新に失敗しました");
+        throw new Error(data?.error ?? "決済ページの作成に失敗しました");
       }
-      setEvent(data.event);
+      window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "更新に失敗しました");
-    } finally {
-      setTogglingPaid(false);
+      setError(err instanceof Error ? err.message : "決済ページの作成に失敗しました");
+      setPurchasing(false);
     }
   }
 
@@ -224,6 +272,18 @@ export default function ManagePage() {
           )}
         </div>
 
+        {checkoutMessage && (
+          <div
+            className={`mb-4 rounded-xl px-4 py-3 text-sm font-semibold ${
+              checkoutMessage.type === "success"
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-neutral-100 text-neutral-600 border border-neutral-200"
+            }`}
+          >
+            {checkoutMessage.text}
+          </div>
+        )}
+
         {error && (
           <p className="mb-4 text-sm text-red-500">{error}</p>
         )}
@@ -237,26 +297,28 @@ export default function ManagePage() {
                   プラン: {event.isPaid ? "有料(透かしなし)" : "無料(透かし表示中)"}
                 </p>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  ※デモ用の切り替えです。実際の決済連携は未実装です
+                  {event.isPaid
+                    ? "ご購入ありがとうございます"
+                    : "Stripeのテスト決済で購入できます(実際の課金は発生しません)"}
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleTogglePaid}
-              disabled={togglingPaid}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-white shadow-sm hover:-translate-y-0.5 hover:shadow-md transition disabled:opacity-50 disabled:translate-y-0 ${
-                event.isPaid
-                  ? "bg-neutral-700 hover:bg-neutral-600"
-                  : "bg-gradient-to-r from-amber-500 to-pink-500 hover:brightness-105"
-              }`}
-            >
-              {togglingPaid && <Spinner className="h-3.5 w-3.5" />}
-              {togglingPaid
-                ? "更新中..."
-                : event.isPaid
-                  ? "無料プランに戻す(デモ)"
-                  : "有料プランにアップグレード(デモ)"}
-            </button>
+            {event.isPaid ? (
+              <span className="rounded-xl bg-green-50 border border-green-200 px-4 py-2 text-sm font-bold text-green-700">
+                ✓ 購入済み
+              </span>
+            ) : (
+              <button
+                onClick={handlePurchase}
+                disabled={purchasing}
+                className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold text-white shadow-sm hover:-translate-y-0.5 hover:shadow-md transition disabled:opacity-50 disabled:translate-y-0 bg-gradient-to-r from-amber-500 to-pink-500 hover:brightness-105"
+              >
+                {purchasing && <Spinner className="h-3.5 w-3.5" />}
+                {purchasing
+                  ? "決済ページを準備中..."
+                  : `有料プランを購入する (¥${WATERMARK_REMOVAL_PRICE_JPY})`}
+              </button>
+            )}
           </div>
         </div>
 
