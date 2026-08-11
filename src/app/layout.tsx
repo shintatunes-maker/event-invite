@@ -13,6 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ),
   title: "イベント招待 | 幹事のためのURL招待アプリ",
   description: "飲み会・誕生日会の招待ページを作成し、URLで参加/未定/不参加を集められるアプリ",
 };
