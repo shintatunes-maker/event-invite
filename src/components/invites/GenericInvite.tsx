@@ -2,6 +2,7 @@ import EventLocationMap from "@/components/EventLocationMap";
 import OrganizerQuickLink from "@/components/OrganizerQuickLink";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
+import ThemeFont from "@/components/ThemeFont";
 import Watermark from "@/components/Watermark";
 import { formatEventDate } from "@/lib/format";
 import { getThemeDefinition } from "@/lib/themes";
@@ -29,11 +30,13 @@ export default function GenericInvite({ event, counts }: Props) {
     ? "text-neutral-200 border-t border-white/10"
     : "text-neutral-700 border-t border-black/10";
   const organizerClass = isDark ? "text-neutral-300" : "text-neutral-500";
+  const titleFont = `'${def.colors.fontFamily}', sans-serif`;
 
   return (
     <main
       className={`relative min-h-screen overflow-hidden ${def.colors.preview} px-4 py-10 sm:py-16`}
     >
+      <ThemeFont family={def.colors.fontFamily} />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 text-4xl sm:text-5xl opacity-50 select-none"
@@ -53,7 +56,7 @@ export default function GenericInvite({ event, counts }: Props) {
           </p>
           <h1
             className={`animate-fade-in-up mt-2 text-3xl sm:text-4xl font-extrabold leading-snug ${titleClass}`}
-            style={{ animationDelay: "0.1s" }}
+            style={{ animationDelay: "0.1s", fontFamily: titleFont }}
           >
             {event.title}
           </h1>

@@ -111,10 +111,16 @@ const OLD_BROWSER_USER_AGENT =
 
 // Google Fonts serves .ttf (Satori-compatible) instead of .woff2 when asked
 // with an old browser UA, and `text=` limits the response to only the
-// glyphs actually used, keeping the fetch small.
-async function loadNotoSansJP(text: string): Promise<ArrayBuffer | null> {
+// glyphs actually used, keeping the fetch small. `weight` is omitted for
+// theme display fonts, most of which only ship a single (non-700) weight.
+async function loadGoogleFontTTF(
+  family: string,
+  text: string,
+  weight?: number,
+): Promise<ArrayBuffer | null> {
   try {
-    const cssUrl = `https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&text=${encodeURIComponent(text)}`;
+    const familyParam = weight ? `${family}:wght@${weight}` : family;
+    const cssUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(familyParam)}&text=${encodeURIComponent(text)}`;
     const cssRes = await fetch(cssUrl, {
       headers: { "User-Agent": OLD_BROWSER_USER_AGENT },
     });
@@ -143,10 +149,25 @@ export default async function OpengraphImage({
     ? formatEventOgDescription(event.date, event.time, event.location)
     : "幹事のためのイベント招待アプリ";
   const badge = def ? `${def.emoji} ${def.label}` : "🎉 イベント招待";
+  const themeFontFamily = def?.colors.fontFamily;
 
-  const fontData = await loadNotoSansJP(
-    title + subtitle + badge + "イベント招待",
-  );
+  const [bodyFontData, themeFontData] = await Promise.all([
+    loadGoogleFontTTF("Noto Sans JP", subtitle + "イベント招待", 700),
+    themeFontFamily ? loadGoogleFontTTF(themeFontFamily, badge + title) : null,
+  ]);
+
+  const fonts: {
+    name: string;
+    data: ArrayBuffer;
+    style: "normal";
+    weight: 400 | 700;
+  }[] = [];
+  if (bodyFontData) {
+    fonts.push({ name: "Noto Sans JP", data: bodyFontData, style: "normal", weight: 700 });
+  }
+  if (themeFontFamily && themeFontData) {
+    fonts.push({ name: themeFontFamily, data: themeFontData, style: "normal", weight: 400 });
+  }
 
   return new ImageResponse(
     (
@@ -160,7 +181,7 @@ export default async function OpengraphImage({
           justifyContent: "center",
           padding: "0 100px",
           background: style.gradient,
-          fontFamily: fontData ? "Noto Sans JP" : undefined,
+          fontFamily: bodyFontData ? "Noto Sans JP" : undefined,
         }}
       >
         <div
@@ -171,6 +192,7 @@ export default async function OpengraphImage({
             letterSpacing: 2,
             color: style.badge,
             marginBottom: 28,
+            fontFamily: themeFontData ? themeFontFamily : undefined,
           }}
         >
           {badge}
@@ -183,6 +205,7 @@ export default async function OpengraphImage({
             textAlign: "center",
             color: style.title,
             lineHeight: 1.3,
+            fontFamily: themeFontData ? themeFontFamily : undefined,
           }}
         >
           {title}
@@ -216,9 +239,7 @@ export default async function OpengraphImage({
     ),
     {
       ...size,
-      fonts: fontData
-        ? [{ name: "Noto Sans JP", data: fontData, style: "normal", weight: 700 }]
-        : [],
+      fonts,
       emoji: "twemoji",
     },
   );

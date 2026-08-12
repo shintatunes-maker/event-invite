@@ -27,6 +27,9 @@ export interface ThemeDefinition {
     // Must be a full class name (not composed at runtime) so Tailwind's
     // scanner picks it up.
     accentText: string;
+    // Google Fonts family name (exact spelling, spaces not underscores)
+    // used for the invite page title/badge — see src/components/ThemeFont.tsx.
+    fontFamily: string;
   };
   // Keyword used to build the "find a venue" search query (see
   // src/lib/venueSearch.ts) when the organizer leaves location blank.
@@ -45,6 +48,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-pink-300 via-purple-200 to-yellow-100",
       mode: "light",
       accentText: "text-purple-600",
+      fontFamily: "Hachi Maru Pop",
     },
     venueSearchKeyword: "パーティー 個室",
   },
@@ -58,6 +62,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-neutral-800 via-red-950 to-neutral-900",
       mode: "dark",
       accentText: "text-amber-400",
+      fontFamily: "RocknRoll One",
     },
     venueSearchKeyword: "居酒屋",
   },
@@ -71,6 +76,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-blue-950 via-slate-800 to-amber-400",
       mode: "dark",
       accentText: "text-amber-300",
+      fontFamily: "Shippori Mincho",
     },
     venueSearchKeyword: "宴会 個室",
   },
@@ -84,6 +90,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-amber-100 via-orange-200 to-orange-300",
       mode: "light",
       accentText: "text-orange-600",
+      fontFamily: "Kosugi Maru",
     },
     venueSearchKeyword: "カフェ ランチ",
   },
@@ -97,6 +104,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-yellow-200 via-amber-300 to-slate-800",
       mode: "light",
       accentText: "text-slate-700",
+      fontFamily: "Zen Old Mincho",
     },
     venueSearchKeyword: "宴会場",
   },
@@ -110,6 +118,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-sky-100 via-white to-sky-300",
       mode: "light",
       accentText: "text-sky-600",
+      fontFamily: "Zen Maru Gothic",
     },
     venueSearchKeyword: "レストラン",
   },
@@ -125,6 +134,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-blue-500 via-blue-400 to-yellow-400",
       mode: "light",
       accentText: "text-blue-700",
+      fontFamily: "Train One",
     },
     venueSearchKeyword: "ランニングコース",
   },
@@ -138,6 +148,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-green-500 via-emerald-300 to-white",
       mode: "light",
       accentText: "text-green-700",
+      fontFamily: "Dela Gothic One",
     },
     venueSearchKeyword: "フットサルコート",
   },
@@ -151,6 +162,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-lime-700 via-yellow-800 to-stone-700",
       mode: "dark",
       accentText: "text-lime-200",
+      fontFamily: "Kiwi Maru",
     },
     venueSearchKeyword: "登山口",
   },
@@ -164,6 +176,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-emerald-600 via-green-700 to-blue-950",
       mode: "dark",
       accentText: "text-emerald-300",
+      fontFamily: "Zen Antique",
     },
     venueSearchKeyword: "ゴルフ場",
   },
@@ -177,6 +190,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-orange-500 via-orange-600 to-green-900",
       mode: "dark",
       accentText: "text-orange-300",
+      fontFamily: "Yusei Magic",
     },
     venueSearchKeyword: "バーベキュー場",
   },
@@ -192,6 +206,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       preview: "bg-gradient-to-br from-orange-50 via-stone-100 to-white",
       mode: "light",
       accentText: "text-orange-500",
+      fontFamily: "Kaisei Decol",
     },
     venueSearchKeyword: "ヨガスタジオ",
   },

@@ -2,7 +2,10 @@ import EventLocationMap from "@/components/EventLocationMap";
 import OrganizerQuickLink from "@/components/OrganizerQuickLink";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
+import ThemeFont from "@/components/ThemeFont";
 import Watermark from "@/components/Watermark";
+
+const TITLE_FONT = "'RocknRoll One', sans-serif";
 import { formatEventDate } from "@/lib/format";
 import type { PublicEventRecord, RsvpCounts } from "@/lib/types";
 
@@ -14,6 +17,7 @@ interface Props {
 export default function DrinkingInvite({ event, counts }: Props) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-neutral-950 via-red-950 to-neutral-950 px-4 py-10 sm:py-16">
+      <ThemeFont family="RocknRoll One" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 text-4xl sm:text-5xl opacity-60 select-none"
@@ -51,7 +55,7 @@ export default function DrinkingInvite({ event, counts }: Props) {
           </p>
           <h1
             className="animate-fade-in-up mt-2 text-3xl sm:text-4xl font-extrabold text-amber-50 leading-snug"
-            style={{ animationDelay: "0.1s" }}
+            style={{ animationDelay: "0.1s", fontFamily: TITLE_FONT }}
           >
             {event.title}
           </h1>

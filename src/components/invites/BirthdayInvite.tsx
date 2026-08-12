@@ -3,7 +3,10 @@ import EventLocationMap from "@/components/EventLocationMap";
 import OrganizerQuickLink from "@/components/OrganizerQuickLink";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
+import ThemeFont from "@/components/ThemeFont";
 import Watermark from "@/components/Watermark";
+
+const TITLE_FONT = "'Hachi Maru Pop', sans-serif";
 import { formatEventDate } from "@/lib/format";
 import type { PublicEventRecord, RsvpCounts } from "@/lib/types";
 
@@ -15,6 +18,7 @@ interface Props {
 export default function BirthdayInvite({ event, counts }: Props) {
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-pink-200 via-purple-100 to-yellow-100 px-4 py-10 sm:py-16">
+      <ThemeFont family="Hachi Maru Pop" />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 text-4xl sm:text-5xl opacity-70 select-none"
@@ -34,7 +38,10 @@ export default function BirthdayInvite({ event, counts }: Props) {
           <p className="animate-fade-in-up text-sm font-bold tracking-wide text-purple-500">
             🎂 BIRTHDAY PARTY 招待状 🎂
           </p>
-          <h1 className="animate-title-pop-in mt-2 text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-orange-400 bg-clip-text text-transparent leading-snug">
+          <h1
+            className="animate-title-pop-in mt-2 text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-orange-400 bg-clip-text text-transparent leading-snug"
+            style={{ fontFamily: TITLE_FONT }}
+          >
             {event.title}
           </h1>
           {event.organizerName && (
