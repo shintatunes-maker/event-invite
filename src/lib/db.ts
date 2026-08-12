@@ -3,6 +3,7 @@ import { createClient } from "@libsql/client";
 import { mkdirSync } from "fs";
 import path from "path";
 import type {
+  AnalyticsSummary,
   CreateEventInput,
   EventRecord,
   EventTheme,
@@ -62,6 +63,19 @@ function init(): Promise<void> {
       await db.execute(
         "CREATE INDEX IF NOT EXISTS idx_responses_event_id ON responses(event_id);",
       );
+
+      // Migration: add creator_id for anonymous usage analytics (no PII —
+      // a random ID the browser generates and stores itself).
+      try {
+        await db.execute(
+          "ALTER TABLE events ADD COLUMN creator_id TEXT NOT NULL DEFAULT '';",
+        );
+      } catch {
+        // column already exists
+      }
+      await db.execute(
+        "CREATE INDEX IF NOT EXISTS idx_events_creator_id ON events(creator_id);",
+      );
     })();
   }
   return ready;
@@ -88,6 +102,7 @@ interface EventRow {
   is_paid: number;
   created_at: string;
   updated_at: string;
+  creator_id: string;
 }
 
 interface ResponseRow {
@@ -113,6 +128,7 @@ function rowToEvent(row: EventRow): EventRecord {
     isPaid: Number(row.is_paid) === 1,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    creatorId: row.creator_id,
   };
 }
 
@@ -145,12 +161,13 @@ export async function createEvent(
     is_paid: 0,
     created_at: now,
     updated_at: now,
+    creator_id: input.creatorId ?? "",
   };
 
   await db.execute({
     sql: `INSERT INTO events
-      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       row.id,
       row.admin_token,
@@ -164,6 +181,7 @@ export async function createEvent(
       row.is_paid,
       row.created_at,
       row.updated_at,
+      row.creator_id,
     ],
   });
 
@@ -306,4 +324,54 @@ export function countResponses(responses: ResponseRecord[]): RsvpCounts {
 export async function getCounts(eventId: string): Promise<RsvpCounts> {
   const responses = await getResponses(eventId);
   return countResponses(responses);
+}
+
+export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
+  await init();
+
+  const [totalResult, themeResult, creatorResult, responseResult] =
+    await Promise.all([
+      db.execute("SELECT COUNT(*) as c FROM events"),
+      db.execute("SELECT theme, COUNT(*) as c FROM events GROUP BY theme"),
+      db.execute(
+        "SELECT COUNT(*) as c FROM events WHERE creator_id != '' GROUP BY creator_id",
+      ),
+      db.execute("SELECT status, COUNT(*) as c FROM responses GROUP BY status"),
+    ]);
+
+  const totalEvents = Number(
+    (totalResult.rows[0] as unknown as { c: number } | undefined)?.c ?? 0,
+  );
+
+  const themeCounts: Record<EventTheme, number> = { birthday: 0, drinking: 0 };
+  for (const row of themeResult.rows as unknown as {
+    theme: EventTheme;
+    c: number;
+  }[]) {
+    themeCounts[row.theme] = Number(row.c);
+  }
+
+  const creatorEventCounts = (
+    creatorResult.rows as unknown as { c: number }[]
+  ).map((r) => Number(r.c));
+  const uniqueCreators = creatorEventCounts.length;
+  const repeatCreators = creatorEventCounts.filter((c) => c > 1).length;
+  const repeatRate = uniqueCreators > 0 ? repeatCreators / uniqueCreators : 0;
+
+  const responseCounts: RsvpCounts = { yes: 0, maybe: 0, no: 0 };
+  for (const row of responseResult.rows as unknown as {
+    status: RsvpStatus;
+    c: number;
+  }[]) {
+    responseCounts[row.status] = Number(row.c);
+  }
+
+  return {
+    totalEvents,
+    themeCounts,
+    uniqueCreators,
+    repeatCreators,
+    repeatRate,
+    responseCounts,
+  };
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Spinner from "@/components/Spinner";
+import { getOrCreateAnonId } from "@/lib/anonId";
 import { THEME_OPTIONS } from "@/lib/themeOptions";
 import type { EventTheme } from "@/lib/types";
 
@@ -59,6 +60,7 @@ export default function CreatePage() {
           location: location.trim(),
           description: description.trim(),
           organizerName: organizerName.trim(),
+          creatorId: getOrCreateAnonId(),
         }),
       });
       const data = await res.json();

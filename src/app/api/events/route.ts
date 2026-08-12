@@ -11,8 +11,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
   }
 
-  const { theme, title, date, time, location, description, organizerName } =
-    body as Record<string, unknown>;
+  const {
+    theme,
+    title,
+    date,
+    time,
+    location,
+    description,
+    organizerName,
+    creatorId,
+  } = body as Record<string, unknown>;
 
   if (typeof theme !== "string" || !THEMES.includes(theme as EventTheme)) {
     return NextResponse.json({ error: "invalid theme" }, { status: 400 });
@@ -44,6 +52,10 @@ export async function POST(req: NextRequest) {
     description: typeof description === "string" ? description.trim() : "",
     organizerName:
       typeof organizerName === "string" ? organizerName.trim() : "",
+    creatorId:
+      typeof creatorId === "string" && creatorId.length <= 100
+        ? creatorId
+        : undefined,
   });
 
   return NextResponse.json({ event }, { status: 201 });

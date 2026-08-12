@@ -17,10 +17,13 @@ export interface EventRecord {
   isPaid: boolean;
   createdAt: string;
   updatedAt: string;
+  // Anonymous, browser-generated ID for usage analytics. Not tied to any
+  // personal information — see AnalyticsSummary.
+  creatorId: string;
 }
 
 // Safe to expose to anyone with the invite link.
-export type PublicEventRecord = Omit<EventRecord, "adminToken">;
+export type PublicEventRecord = Omit<EventRecord, "adminToken" | "creatorId">;
 
 export interface ResponseRecord {
   id: string;
@@ -45,6 +48,16 @@ export interface CreateEventInput {
   location: string;
   description?: string;
   organizerName?: string;
+  creatorId?: string;
+}
+
+export interface AnalyticsSummary {
+  totalEvents: number;
+  themeCounts: Record<EventTheme, number>;
+  uniqueCreators: number;
+  repeatCreators: number;
+  repeatRate: number;
+  responseCounts: RsvpCounts;
 }
 
 export interface UpdateEventInput {
