@@ -15,13 +15,30 @@ export default function DrinkingInvite({ event, counts }: Props) {
         aria-hidden
         className="pointer-events-none absolute inset-0 text-4xl sm:text-5xl opacity-60 select-none"
       >
-        <span className="absolute left-[6%] top-[8%]">🏮</span>
+        <span className="animate-gentle-sway absolute left-[6%] top-[8%] inline-block">
+          🏮
+        </span>
         <span className="animate-gentle-bob absolute right-[8%] top-[10%]">
           🍻
         </span>
-        <span className="absolute left-[10%] top-[72%]">🍢</span>
-        <span className="absolute right-[10%] top-[68%]">🍶</span>
-        <span className="absolute left-[45%] top-[85%] text-3xl">🍺</span>
+        <span
+          className="animate-gentle-bob absolute left-[10%] top-[72%]"
+          style={{ animationDelay: "0.5s" }}
+        >
+          🍢
+        </span>
+        <span
+          className="animate-gentle-bob absolute right-[10%] top-[68%]"
+          style={{ animationDelay: "1s" }}
+        >
+          🍶
+        </span>
+        <span
+          className="animate-gentle-bob absolute left-[45%] top-[85%] text-3xl"
+          style={{ animationDelay: "1.5s" }}
+        >
+          🍺
+        </span>
       </div>
 
       <div className="relative mx-auto w-full max-w-md">

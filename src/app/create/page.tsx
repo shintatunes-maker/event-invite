@@ -282,6 +282,7 @@ export default function CreatePage() {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
+                step={300}
                 className={inputClass}
               />
             </div>

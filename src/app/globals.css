@@ -102,6 +102,16 @@ button:active:not(:disabled) {
   }
 }
 
+@keyframes gentle-sway {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
 @keyframes button-pop {
   0% {
     transform: scale(1);
@@ -133,6 +143,11 @@ button:active:not(:disabled) {
   animation: gentle-bob 2.6s ease-in-out infinite;
 }
 
+.animate-gentle-sway {
+  animation: gentle-sway 3.2s ease-in-out infinite;
+  transform-origin: top center;
+}
+
 .animate-button-pop {
   animation: button-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -142,6 +157,7 @@ button:active:not(:disabled) {
   .animate-title-pop-in,
   .animate-fade-in-up,
   .animate-gentle-bob,
+  .animate-gentle-sway,
   .animate-button-pop {
     animation: none !important;
   }

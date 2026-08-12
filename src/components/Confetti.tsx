@@ -26,12 +26,12 @@ export default function Confetti() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute top-0 left-0 h-[480px] w-full overflow-hidden select-none"
+      className="pointer-events-none absolute top-0 left-0 z-20 h-[480px] w-full overflow-hidden select-none"
     >
       {PIECES.map((p, i) => (
         <span
           key={i}
-          className={`absolute top-0 h-2.5 w-1.5 rounded-sm ${p.color} animate-confetti-fall`}
+          className={`absolute top-0 h-3 w-2 rounded-sm shadow-sm ${p.color} animate-confetti-fall`}
           style={{
             left: p.left,
             animationDelay: `${p.delay}s`,
