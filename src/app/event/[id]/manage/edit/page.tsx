@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import LocationAutocompleteInput from "@/components/LocationAutocompleteInput";
 import Spinner from "@/components/Spinner";
 import ThemePicker from "@/components/ThemePicker";
 import VenueSearchButton from "@/components/VenueSearchButton";
@@ -197,22 +198,6 @@ export default function EditEventPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-neutral-700 mb-1">
-              場所(任意)
-            </label>
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className={inputClass}
-              maxLength={100}
-            />
-            <p className="mt-1 text-xs text-neutral-400">
-              まだ決まっていない場合は空欄のままでOKです
-            </p>
-          </div>
-
           {!location.trim() && (
             <div>
               <label className="block text-sm font-semibold text-neutral-700 mb-1">
@@ -227,11 +212,26 @@ export default function EditEventPage() {
                 maxLength={50}
               />
               <p className="mt-1 text-xs text-neutral-400 mb-2">
-                下のボタンからお店を探して、決まったら上の「場所」欄に入力してください
+                下のボタンからお店を探して、決まったら下の「場所」欄に入力してください
               </p>
               <VenueSearchButton theme={theme} area={venueArea} />
             </div>
           )}
+
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              場所(任意)
+            </label>
+            <LocationAutocompleteInput
+              value={location}
+              onChange={setLocation}
+              className={inputClass}
+              maxLength={100}
+            />
+            <p className="mt-1 text-xs text-neutral-400">
+              まだ決まっていない場合は空欄のままでOKです
+            </p>
+          </div>
 
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-1">
