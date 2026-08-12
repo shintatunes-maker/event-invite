@@ -24,6 +24,7 @@ export default function EditEventPage() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [rsvpDeadline, setRsvpDeadline] = useState("");
   const [description, setDescription] = useState("");
   const [organizerName, setOrganizerName] = useState("");
 
@@ -52,6 +53,7 @@ export default function EditEventPage() {
         setDate(event.date);
         setTime(event.time);
         setLocation(event.location);
+        setRsvpDeadline(event.rsvpDeadline ?? "");
         setDescription(event.description);
         setOrganizerName(event.organizerName);
       } catch (err) {
@@ -91,6 +93,7 @@ export default function EditEventPage() {
           location: location.trim(),
           description: description.trim(),
           organizerName: organizerName.trim(),
+          rsvpDeadline,
         }),
       });
       const data = await res.json();
@@ -234,6 +237,21 @@ export default function EditEventPage() {
               className={inputClass}
               maxLength={100}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              回答期限(任意)
+            </label>
+            <input
+              type="date"
+              value={rsvpDeadline}
+              onChange={(e) => setRsvpDeadline(e.target.value)}
+              className={inputClass}
+            />
+            <p className="mt-1 text-xs text-neutral-400">
+              招待ページに「あと◯日」と表示されます。過ぎても回答はブロックされません
+            </p>
           </div>
 
           <div>

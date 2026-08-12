@@ -1,3 +1,4 @@
+import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
 import Watermark from "@/components/Watermark";
 import { formatEventDate } from "@/lib/format";
@@ -81,6 +82,10 @@ export default function DrinkingInvite({ event, counts }: Props) {
             </p>
           )}
         </div>
+
+        {event.rsvpDeadline && (
+          <RsvpDeadlineNotice deadline={event.rsvpDeadline} theme="drinking" />
+        )}
 
         <RsvpForm eventId={event.id} theme="drinking" initialCounts={counts} />
       </div>

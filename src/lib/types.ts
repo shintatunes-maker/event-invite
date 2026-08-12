@@ -20,6 +20,8 @@ export interface EventRecord {
   // Anonymous, browser-generated ID for usage analytics. Not tied to any
   // personal information — see AnalyticsSummary.
   creatorId: string;
+  // Optional RSVP deadline, YYYY-MM-DD. Empty string means unset.
+  rsvpDeadline: string;
 }
 
 // Safe to expose to anyone with the invite link.
@@ -49,6 +51,7 @@ export interface CreateEventInput {
   description?: string;
   organizerName?: string;
   creatorId?: string;
+  rsvpDeadline?: string;
 }
 
 export interface AnalyticsSummary {
@@ -68,4 +71,5 @@ export interface UpdateEventInput {
   location?: string;
   description?: string;
   organizerName?: string;
+  rsvpDeadline?: string;
 }

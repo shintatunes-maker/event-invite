@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     description,
     organizerName,
     creatorId,
+    rsvpDeadline,
   } = body as Record<string, unknown>;
 
   if (typeof theme !== "string" || !THEMES.includes(theme as EventTheme)) {
@@ -56,6 +57,8 @@ export async function POST(req: NextRequest) {
       typeof creatorId === "string" && creatorId.length <= 100
         ? creatorId
         : undefined,
+    rsvpDeadline:
+      typeof rsvpDeadline === "string" ? rsvpDeadline.trim() : undefined,
   });
 
   return NextResponse.json({ event }, { status: 201 });

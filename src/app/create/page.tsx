@@ -23,6 +23,7 @@ export default function CreatePage() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [rsvpDeadline, setRsvpDeadline] = useState("");
   const [description, setDescription] = useState("");
   const [organizerName, setOrganizerName] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -67,6 +68,7 @@ export default function CreatePage() {
           location: location.trim(),
           description: description.trim(),
           organizerName: organizerName.trim(),
+          rsvpDeadline,
           creatorId: getOrCreateAnonId(),
         }),
       });
@@ -88,6 +90,7 @@ export default function CreatePage() {
     setDate("");
     setTime("");
     setLocation("");
+    setRsvpDeadline("");
     setDescription("");
     setOrganizerName("");
     setCopiedShare(false);
@@ -300,6 +303,21 @@ export default function CreatePage() {
               className={inputClass}
               maxLength={100}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              回答期限(任意)
+            </label>
+            <input
+              type="date"
+              value={rsvpDeadline}
+              onChange={(e) => setRsvpDeadline(e.target.value)}
+              className={inputClass}
+            />
+            <p className="mt-1 text-xs text-neutral-400">
+              招待ページに「あと◯日」と表示されます。過ぎても回答はブロックされません
+            </p>
           </div>
 
           <div>

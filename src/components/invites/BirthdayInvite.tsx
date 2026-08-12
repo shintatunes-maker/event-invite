@@ -1,4 +1,5 @@
 import Confetti from "@/components/Confetti";
+import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
 import Watermark from "@/components/Watermark";
 import { formatEventDate } from "@/lib/format";
@@ -63,6 +64,10 @@ export default function BirthdayInvite({ event, counts }: Props) {
             </p>
           )}
         </div>
+
+        {event.rsvpDeadline && (
+          <RsvpDeadlineNotice deadline={event.rsvpDeadline} theme="birthday" />
+        )}
 
         <RsvpForm eventId={event.id} theme="birthday" initialCounts={counts} />
       </div>

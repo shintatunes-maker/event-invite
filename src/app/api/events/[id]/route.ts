@@ -36,8 +36,16 @@ export async function PATCH(
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
   }
 
-  const { theme, title, date, time, location, description, organizerName } =
-    body as Record<string, unknown>;
+  const {
+    theme,
+    title,
+    date,
+    time,
+    location,
+    description,
+    organizerName,
+    rsvpDeadline,
+  } = body as Record<string, unknown>;
 
   if (theme !== undefined && !THEMES.includes(theme as EventTheme)) {
     return NextResponse.json({ error: "invalid theme" }, { status: 400 });
@@ -68,6 +76,8 @@ export async function PATCH(
       typeof description === "string" ? description.trim() : undefined,
     organizerName:
       typeof organizerName === "string" ? organizerName.trim() : undefined,
+    rsvpDeadline:
+      typeof rsvpDeadline === "string" ? rsvpDeadline.trim() : undefined,
   });
 
   return NextResponse.json({ event: toPublicEvent(updated!) });

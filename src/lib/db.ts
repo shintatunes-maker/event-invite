@@ -76,6 +76,15 @@ function init(): Promise<void> {
       await db.execute(
         "CREATE INDEX IF NOT EXISTS idx_events_creator_id ON events(creator_id);",
       );
+
+      // Migration: optional RSVP deadline (YYYY-MM-DD, '' = unset).
+      try {
+        await db.execute(
+          "ALTER TABLE events ADD COLUMN rsvp_deadline TEXT NOT NULL DEFAULT '';",
+        );
+      } catch {
+        // column already exists
+      }
     })();
   }
   return ready;
@@ -103,6 +112,7 @@ interface EventRow {
   created_at: string;
   updated_at: string;
   creator_id: string;
+  rsvp_deadline: string;
 }
 
 interface ResponseRow {
@@ -129,6 +139,7 @@ function rowToEvent(row: EventRow): EventRecord {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     creatorId: row.creator_id,
+    rsvpDeadline: row.rsvp_deadline,
   };
 }
 
@@ -162,12 +173,13 @@ export async function createEvent(
     created_at: now,
     updated_at: now,
     creator_id: input.creatorId ?? "",
+    rsvp_deadline: input.rsvpDeadline ?? "",
   };
 
   await db.execute({
     sql: `INSERT INTO events
-      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id, rsvp_deadline)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       row.id,
       row.admin_token,
@@ -182,6 +194,7 @@ export async function createEvent(
       row.created_at,
       row.updated_at,
       row.creator_id,
+      row.rsvp_deadline,
     ],
   });
 
@@ -214,13 +227,14 @@ export async function updateEvent(
     location: patch.location ?? existing.location,
     description: patch.description ?? existing.description,
     organizer_name: patch.organizerName ?? existing.organizerName,
+    rsvp_deadline: patch.rsvpDeadline ?? existing.rsvpDeadline,
   };
   const updatedAt = new Date().toISOString();
 
   await db.execute({
     sql: `UPDATE events SET
       theme = ?, title = ?, date = ?, time = ?, location = ?,
-      description = ?, organizer_name = ?, updated_at = ?
+      description = ?, organizer_name = ?, rsvp_deadline = ?, updated_at = ?
      WHERE id = ?`,
     args: [
       merged.theme,
@@ -230,6 +244,7 @@ export async function updateEvent(
       merged.location,
       merged.description,
       merged.organizer_name,
+      merged.rsvp_deadline,
       updatedAt,
       id,
     ],
