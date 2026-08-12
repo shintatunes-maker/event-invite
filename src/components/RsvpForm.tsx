@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Spinner from "@/components/Spinner";
+import { getThemeDefinition } from "@/lib/themes";
 import type { EventTheme, RsvpCounts, RsvpStatus } from "@/lib/types";
 
 interface RsvpFormProps {
@@ -55,6 +56,34 @@ const DEFAULT_THEME_STYLE: ThemeFormStyle = {
   error: "text-red-500",
   success: "text-neutral-700",
   link: "text-neutral-700 underline underline-offset-2",
+};
+
+// Dark-card counterpart to DEFAULT_THEME_STYLE, used for themes whose
+// registry entry has colors.mode "dark" (see src/lib/themes/registry.ts).
+const DEFAULT_DARK_THEME_STYLE: ThemeFormStyle = {
+  card: "bg-neutral-900/85 text-neutral-50 border border-white/10",
+  label: "text-neutral-300",
+  input:
+    "bg-neutral-800 border border-white/10 text-neutral-50 placeholder:text-neutral-500 focus:border-neutral-400 focus:ring-neutral-500",
+  countBadge: (status) =>
+    status === "yes"
+      ? "bg-emerald-500/20 text-emerald-300"
+      : status === "maybe"
+        ? "bg-amber-500/20 text-amber-300"
+        : "bg-neutral-700/50 text-neutral-300",
+  selectedButton: (status) =>
+    status === "yes"
+      ? "bg-emerald-500 text-neutral-900 shadow-lg shadow-emerald-500/40"
+      : status === "maybe"
+        ? "bg-amber-500 text-neutral-900 shadow-lg shadow-amber-500/40"
+        : "bg-neutral-500 text-neutral-900 shadow-lg shadow-neutral-500/40",
+  unselectedButton:
+    "bg-neutral-800 text-neutral-200 border border-white/10 hover:bg-neutral-700",
+  submitButton:
+    "bg-neutral-50 text-neutral-900 hover:bg-neutral-200 disabled:opacity-50",
+  error: "text-red-400",
+  success: "text-neutral-100",
+  link: "text-neutral-200 underline underline-offset-2",
 };
 
 const THEME_STYLES: Partial<Record<EventTheme, ThemeFormStyle>> = {
@@ -115,7 +144,11 @@ export default function RsvpForm({
   theme,
   initialCounts,
 }: RsvpFormProps) {
-  const styles = THEME_STYLES[theme] ?? DEFAULT_THEME_STYLE;
+  const styles =
+    THEME_STYLES[theme] ??
+    (getThemeDefinition(theme).colors.mode === "dark"
+      ? DEFAULT_DARK_THEME_STYLE
+      : DEFAULT_THEME_STYLE);
   const [name, setName] = useState("");
   const [status, setStatus] = useState<RsvpStatus | null>(null);
   const [comment, setComment] = useState("");

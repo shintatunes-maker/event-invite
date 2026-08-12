@@ -1,7 +1,7 @@
+import EventLocationMap from "@/components/EventLocationMap";
 import OrganizerQuickLink from "@/components/OrganizerQuickLink";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
-import VenueSearchButton from "@/components/VenueSearchButton";
 import Watermark from "@/components/Watermark";
 import { formatEventDate } from "@/lib/format";
 import type { PublicEventRecord, RsvpCounts } from "@/lib/types";
@@ -76,14 +76,11 @@ export default function DrinkingInvite({ event, counts }: Props) {
             <div className="flex items-center gap-3">
               <dt className="text-xl">📍</dt>
               <dd className="font-semibold">
-                {event.location ? (
-                  event.location
-                ) : (
-                  <VenueSearchButton theme="drinking" area={event.venueArea} />
-                )}
+                {event.location || "会場は未定です"}
               </dd>
             </div>
           </dl>
+          <EventLocationMap location={event.location} />
           {event.description && (
             <p className="mt-4 whitespace-pre-wrap text-sm text-amber-100/90 border-t border-amber-800/40 pt-4">
               {event.description}

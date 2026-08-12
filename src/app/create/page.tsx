@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
 import ThemePicker from "@/components/ThemePicker";
+import VenueSearchButton from "@/components/VenueSearchButton";
 import { getOrCreateAnonId } from "@/lib/anonId";
 import { formatEventOgDescription } from "@/lib/format";
 import { saveOrganizerToken } from "@/lib/organizerTokens";
@@ -276,7 +277,7 @@ export default function CreatePage() {
               maxLength={100}
             />
             <p className="mt-1 text-xs text-neutral-400">
-              空欄のままにすると、招待ページに「お店を探す」ボタンが表示されます
+              まだ決まっていない場合は空欄のままでOKです
             </p>
           </div>
 
@@ -293,9 +294,10 @@ export default function CreatePage() {
                 className={inputClass}
                 maxLength={50}
               />
-              <p className="mt-1 text-xs text-neutral-400">
-                「お店を探す」ボタンの検索条件に使われます
+              <p className="mt-1 text-xs text-neutral-400 mb-2">
+                下のボタンからお店を探して、決まったら上の「場所」欄に入力してください
               </p>
+              <VenueSearchButton theme={theme} area={venueArea} />
             </div>
           )}
 
