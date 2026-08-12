@@ -96,6 +96,14 @@ export default function RsvpForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submittedAs, setSubmittedAs] = useState<RsvpStatus | null>(null);
+  const [poppedOption, setPoppedOption] = useState<RsvpStatus | null>(null);
+  const [popNonce, setPopNonce] = useState(0);
+
+  function handleSelectStatus(value: RsvpStatus) {
+    setStatus(value);
+    setPoppedOption(value);
+    setPopNonce((n) => n + 1);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -184,10 +192,16 @@ export default function RsvpForm({
             <div className="grid grid-cols-3 gap-2">
               {STATUS_OPTIONS.map((opt) => (
                 <button
-                  key={opt.value}
+                  key={
+                    opt.value === poppedOption
+                      ? `${opt.value}-${popNonce}`
+                      : opt.value
+                  }
                   type="button"
-                  onClick={() => setStatus(opt.value)}
+                  onClick={() => handleSelectStatus(opt.value)}
                   className={`rounded-xl py-3 text-sm font-bold transition hover:-translate-y-0.5 ${
+                    opt.value === poppedOption ? "animate-button-pop" : ""
+                  } ${
                     status === opt.value
                       ? styles.selectedButton(opt.value)
                       : styles.unselectedButton

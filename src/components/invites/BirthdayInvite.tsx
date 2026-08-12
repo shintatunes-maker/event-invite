@@ -1,3 +1,4 @@
+import Confetti from "@/components/Confetti";
 import RsvpForm from "@/components/RsvpForm";
 import Watermark from "@/components/Watermark";
 import { formatEventDate } from "@/lib/format";
@@ -23,16 +24,21 @@ export default function BirthdayInvite({ event, counts }: Props) {
         <span className="absolute right-[20%] top-[85%] text-3xl">🎈</span>
       </div>
 
+      <Confetti />
+
       <div className="relative mx-auto w-full max-w-md">
         <div className="text-center mb-6">
-          <p className="text-sm font-bold tracking-wide text-purple-500">
+          <p className="animate-fade-in-up text-sm font-bold tracking-wide text-purple-500">
             🎂 BIRTHDAY PARTY 招待状 🎂
           </p>
-          <h1 className="mt-2 text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-orange-400 bg-clip-text text-transparent leading-snug">
+          <h1 className="animate-title-pop-in mt-2 text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-orange-400 bg-clip-text text-transparent leading-snug">
             {event.title}
           </h1>
           {event.organizerName && (
-            <p className="mt-2 text-sm text-purple-600">
+            <p
+              className="animate-fade-in-up mt-2 text-sm text-purple-600"
+              style={{ animationDelay: "0.15s" }}
+            >
               幹事: {event.organizerName}
             </p>
           )}
