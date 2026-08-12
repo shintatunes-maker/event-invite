@@ -34,6 +34,11 @@ export interface ThemeDefinition {
   // Keyword used to build the "find a venue" search query (see
   // src/lib/venueSearch.ts) when the organizer leaves location blank.
   venueSearchKeyword: string;
+  // Starting point for the invite page's packing checklist (see
+  // src/components/PackingList.tsx). The organizer can add/remove items
+  // from this in the create/edit form; empty for themes where a packing
+  // list isn't typically needed (party themes).
+  defaultPackingList: string[];
 }
 
 export const THEME_REGISTRY: ThemeDefinition[] = [
@@ -51,6 +56,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Hachi Maru Pop",
     },
     venueSearchKeyword: "パーティー 個室",
+    defaultPackingList: [],
   },
   {
     id: "drinking",
@@ -65,6 +71,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "RocknRoll One",
     },
     venueSearchKeyword: "居酒屋",
+    defaultPackingList: [],
   },
   {
     id: "farewell",
@@ -79,6 +86,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Shippori Mincho",
     },
     venueSearchKeyword: "宴会 個室",
+    defaultPackingList: [],
   },
   {
     id: "ladies",
@@ -93,6 +101,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Kosugi Maru",
     },
     venueSearchKeyword: "カフェ ランチ",
+    defaultPackingList: [],
   },
   {
     id: "reunion",
@@ -107,6 +116,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Zen Old Mincho",
     },
     venueSearchKeyword: "宴会場",
+    defaultPackingList: [],
   },
   {
     id: "housewarming",
@@ -121,6 +131,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Zen Maru Gothic",
     },
     venueSearchKeyword: "レストラン",
+    defaultPackingList: [],
   },
 
   // ---- スポーツ・アクティビティ系 ----
@@ -137,6 +148,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Train One",
     },
     venueSearchKeyword: "ランニングコース",
+    defaultPackingList: ["着替え", "タオル", "飲み物"],
   },
   {
     id: "futsal",
@@ -151,6 +163,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Dela Gothic One",
     },
     venueSearchKeyword: "フットサルコート",
+    defaultPackingList: ["動きやすい服装", "タオル"],
   },
   {
     id: "hiking",
@@ -165,6 +178,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Kiwi Maru",
     },
     venueSearchKeyword: "登山口",
+    defaultPackingList: ["飲み物", "レインウェア", "軍手"],
   },
   {
     id: "golf",
@@ -179,6 +193,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Zen Antique",
     },
     venueSearchKeyword: "ゴルフ場",
+    defaultPackingList: ["グローブ", "着替え", "日焼け止め"],
   },
   {
     id: "bbq",
@@ -193,6 +208,7 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Yusei Magic",
     },
     venueSearchKeyword: "バーベキュー場",
+    defaultPackingList: ["着替え", "虫除け", "懐中電灯"],
   },
 
   // ---- ウェルネス系 ----
@@ -209,5 +225,6 @@ export const THEME_REGISTRY: ThemeDefinition[] = [
       fontFamily: "Kaisei Decol",
     },
     venueSearchKeyword: "ヨガスタジオ",
+    defaultPackingList: ["動きやすい服装", "ヨガマット"],
   },
 ];

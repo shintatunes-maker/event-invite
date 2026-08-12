@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEvent } from "@/lib/db";
+import { parsePackingListInput } from "@/lib/packingList";
 import { THEME_REGISTRY } from "@/lib/themes";
 import type { EventTheme } from "@/lib/types";
 
@@ -23,6 +24,7 @@ export async function POST(req: NextRequest) {
     creatorId,
     rsvpDeadline,
     venueArea,
+    packingList,
   } = body as Record<string, unknown>;
 
   if (typeof theme !== "string" || !THEMES.includes(theme as EventTheme)) {
@@ -61,6 +63,7 @@ export async function POST(req: NextRequest) {
     rsvpDeadline:
       typeof rsvpDeadline === "string" ? rsvpDeadline.trim() : undefined,
     venueArea: typeof venueArea === "string" ? venueArea.trim() : undefined,
+    packingList: parsePackingListInput(packingList),
   });
 
   return NextResponse.json({ event }, { status: 201 });

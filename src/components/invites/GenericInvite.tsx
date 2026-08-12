@@ -1,5 +1,7 @@
+import AddToCalendarButton from "@/components/AddToCalendarButton";
 import EventLocationMap from "@/components/EventLocationMap";
 import OrganizerQuickLink from "@/components/OrganizerQuickLink";
+import PackingList from "@/components/PackingList";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
 import ThemeFont from "@/components/ThemeFont";
@@ -93,7 +95,23 @@ export default function GenericInvite({ event, counts }: Props) {
               {event.description}
             </p>
           )}
+          <PackingList
+            eventId={event.id}
+            items={event.packingList}
+            dividerClassName={isDark ? "border-t border-white/10" : "border-t border-black/10"}
+          />
         </div>
+
+        <AddToCalendarButton
+          event={{
+            id: event.id,
+            title: event.title,
+            date: event.date,
+            time: event.time,
+            location: event.location,
+            description: event.description,
+          }}
+        />
 
         {event.rsvpDeadline && (
           <RsvpDeadlineNotice deadline={event.rsvpDeadline} theme={event.theme} />

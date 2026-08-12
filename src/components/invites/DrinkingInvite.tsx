@@ -1,13 +1,15 @@
+import AddToCalendarButton from "@/components/AddToCalendarButton";
 import EventLocationMap from "@/components/EventLocationMap";
 import OrganizerQuickLink from "@/components/OrganizerQuickLink";
+import PackingList from "@/components/PackingList";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
 import ThemeFont from "@/components/ThemeFont";
 import Watermark from "@/components/Watermark";
-
-const TITLE_FONT = "'RocknRoll One', sans-serif";
 import { formatEventDate } from "@/lib/format";
 import type { PublicEventRecord, RsvpCounts } from "@/lib/types";
+
+const TITLE_FONT = "'RocknRoll One', sans-serif";
 
 interface Props {
   event: PublicEventRecord;
@@ -90,7 +92,23 @@ export default function DrinkingInvite({ event, counts }: Props) {
               {event.description}
             </p>
           )}
+          <PackingList
+            eventId={event.id}
+            items={event.packingList}
+            dividerClassName="border-t border-amber-800/40"
+          />
         </div>
+
+        <AddToCalendarButton
+          event={{
+            id: event.id,
+            title: event.title,
+            date: event.date,
+            time: event.time,
+            location: event.location,
+            description: event.description,
+          }}
+        />
 
         {event.rsvpDeadline && (
           <RsvpDeadlineNotice deadline={event.rsvpDeadline} theme="drinking" />

@@ -3,13 +3,16 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import LocationAutocompleteInput from "@/components/LocationAutocompleteInput";
+import PackingListEditor from "@/components/PackingListEditor";
 import Spinner from "@/components/Spinner";
 import ThemePicker from "@/components/ThemePicker";
 import VenueSearchButton from "@/components/VenueSearchButton";
 import { getOrCreateAnonId } from "@/lib/anonId";
 import { formatEventOgDescription } from "@/lib/format";
 import { saveOrganizerToken } from "@/lib/organizerTokens";
+import { packingListsEqual } from "@/lib/packingList";
 import { canUseWebShare, shareInvite } from "@/lib/share";
+import { getThemeDefinition } from "@/lib/themes";
 import type { EventTheme } from "@/lib/types";
 
 const inputClass =
@@ -30,6 +33,9 @@ export default function CreatePage() {
   const [rsvpDeadline, setRsvpDeadline] = useState("");
   const [description, setDescription] = useState("");
   const [organizerName, setOrganizerName] = useState("");
+  const [packingList, setPackingList] = useState<string[]>(
+    () => getThemeDefinition("birthday").defaultPackingList,
+  );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<CreatedEvent | null>(null);
@@ -49,6 +55,20 @@ export default function CreatePage() {
     created && typeof window !== "undefined"
       ? `${window.location.origin}/event/${created.id}/manage?token=${created.adminToken}`
       : "";
+
+  function handleThemeChange(nextTheme: EventTheme) {
+    // Only swap the packing list to the new theme's default if the
+    // organizer hasn't customized it yet — avoids clobbering their edits
+    // if they browse between themes after already tweaking the list.
+    const wasDefault = packingListsEqual(
+      packingList,
+      getThemeDefinition(theme).defaultPackingList,
+    );
+    setTheme(nextTheme);
+    if (wasDefault) {
+      setPackingList(getThemeDefinition(nextTheme).defaultPackingList);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -74,6 +94,7 @@ export default function CreatePage() {
           description: description.trim(),
           organizerName: organizerName.trim(),
           rsvpDeadline,
+          packingList,
           creatorId: getOrCreateAnonId(),
         }),
       });
@@ -100,6 +121,7 @@ export default function CreatePage() {
     setRsvpDeadline("");
     setDescription("");
     setOrganizerName("");
+    setPackingList(getThemeDefinition(theme).defaultPackingList);
     setCopiedShare(false);
     setCopiedManage(false);
   }
@@ -223,7 +245,7 @@ export default function CreatePage() {
           onSubmit={handleSubmit}
           className="space-y-6 rounded-2xl bg-white shadow-sm p-6 sm:p-8"
         >
-          <ThemePicker value={theme} onChange={setTheme} />
+          <ThemePicker value={theme} onChange={handleThemeChange} />
 
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-1">
@@ -328,6 +350,16 @@ export default function CreatePage() {
               className={inputClass}
               maxLength={40}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              持ち物リスト(任意)
+            </label>
+            <p className="mb-2 text-xs text-neutral-400">
+              招待ページにチェックリストとして表示されます。テーマに合わせて自動で入力されていますが、自由に追加・削除できます
+            </p>
+            <PackingListEditor items={packingList} onChange={setPackingList} />
           </div>
 
           <div>

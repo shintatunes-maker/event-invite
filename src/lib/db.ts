@@ -96,6 +96,17 @@ function init(): Promise<void> {
       } catch {
         // column already exists
       }
+
+      // Migration: packing checklist, stored as a JSON string array.
+      // Starts from the theme's default (see src/lib/themes/registry.ts)
+      // but the organizer can freely add/remove items.
+      try {
+        await db.execute(
+          "ALTER TABLE events ADD COLUMN packing_list TEXT NOT NULL DEFAULT '[]';",
+        );
+      } catch {
+        // column already exists
+      }
     })();
   }
   return ready;
@@ -125,6 +136,7 @@ interface EventRow {
   creator_id: string;
   rsvp_deadline: string;
   venue_area: string;
+  packing_list: string;
 }
 
 interface ResponseRow {
@@ -153,7 +165,17 @@ function rowToEvent(row: EventRow): EventRecord {
     creatorId: row.creator_id,
     rsvpDeadline: row.rsvp_deadline,
     venueArea: row.venue_area,
+    packingList: parsePackingList(row.packing_list),
   };
+}
+
+function parsePackingList(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((v) => typeof v === "string") : [];
+  } catch {
+    return [];
+  }
 }
 
 function rowToResponse(row: ResponseRow): ResponseRecord {
@@ -188,12 +210,13 @@ export async function createEvent(
     creator_id: input.creatorId ?? "",
     rsvp_deadline: input.rsvpDeadline ?? "",
     venue_area: input.venueArea ?? "",
+    packing_list: JSON.stringify(input.packingList ?? []),
   };
 
   await db.execute({
     sql: `INSERT INTO events
-      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id, rsvp_deadline, venue_area)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id, rsvp_deadline, venue_area, packing_list)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       row.id,
       row.admin_token,
@@ -210,6 +233,7 @@ export async function createEvent(
       row.creator_id,
       row.rsvp_deadline,
       row.venue_area,
+      row.packing_list,
     ],
   });
 
@@ -244,13 +268,14 @@ export async function updateEvent(
     organizer_name: patch.organizerName ?? existing.organizerName,
     rsvp_deadline: patch.rsvpDeadline ?? existing.rsvpDeadline,
     venue_area: patch.venueArea ?? existing.venueArea,
+    packing_list: JSON.stringify(patch.packingList ?? existing.packingList),
   };
   const updatedAt = new Date().toISOString();
 
   await db.execute({
     sql: `UPDATE events SET
       theme = ?, title = ?, date = ?, time = ?, location = ?,
-      description = ?, organizer_name = ?, rsvp_deadline = ?, venue_area = ?, updated_at = ?
+      description = ?, organizer_name = ?, rsvp_deadline = ?, venue_area = ?, packing_list = ?, updated_at = ?
      WHERE id = ?`,
     args: [
       merged.theme,
@@ -262,6 +287,7 @@ export async function updateEvent(
       merged.organizer_name,
       merged.rsvp_deadline,
       merged.venue_area,
+      merged.packing_list,
       updatedAt,
       id,
     ],

@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import LocationAutocompleteInput from "@/components/LocationAutocompleteInput";
+import PackingListEditor from "@/components/PackingListEditor";
 import Spinner from "@/components/Spinner";
 import ThemePicker from "@/components/ThemePicker";
 import VenueSearchButton from "@/components/VenueSearchButton";
+import { packingListsEqual } from "@/lib/packingList";
+import { getThemeDefinition } from "@/lib/themes";
 import type { EventTheme } from "@/lib/types";
 
 const inputClass =
@@ -30,6 +33,7 @@ export default function EditEventPage() {
   const [rsvpDeadline, setRsvpDeadline] = useState("");
   const [description, setDescription] = useState("");
   const [organizerName, setOrganizerName] = useState("");
+  const [packingList, setPackingList] = useState<string[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +64,7 @@ export default function EditEventPage() {
         setRsvpDeadline(event.rsvpDeadline ?? "");
         setDescription(event.description);
         setOrganizerName(event.organizerName);
+        setPackingList(event.packingList ?? []);
       } catch (err) {
         setLoadError(
           err instanceof Error ? err.message : "読み込みに失敗しました",
@@ -71,6 +76,17 @@ export default function EditEventPage() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id, token]);
+
+  function handleThemeChange(nextTheme: EventTheme) {
+    const wasDefault = packingListsEqual(
+      packingList,
+      getThemeDefinition(theme).defaultPackingList,
+    );
+    setTheme(nextTheme);
+    if (wasDefault) {
+      setPackingList(getThemeDefinition(nextTheme).defaultPackingList);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -99,6 +115,7 @@ export default function EditEventPage() {
           description: description.trim(),
           organizerName: organizerName.trim(),
           rsvpDeadline,
+          packingList,
         }),
       });
       const data = await res.json();
@@ -157,7 +174,7 @@ export default function EditEventPage() {
           onSubmit={handleSubmit}
           className="space-y-6 rounded-2xl bg-white shadow-sm p-6 sm:p-8"
         >
-          <ThemePicker value={theme} onChange={setTheme} />
+          <ThemePicker value={theme} onChange={handleThemeChange} />
 
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-1">
@@ -259,6 +276,16 @@ export default function EditEventPage() {
               className={inputClass}
               maxLength={40}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              持ち物リスト(任意)
+            </label>
+            <p className="mb-2 text-xs text-neutral-400">
+              招待ページにチェックリストとして表示されます。自由に追加・削除できます
+            </p>
+            <PackingListEditor items={packingList} onChange={setPackingList} />
           </div>
 
           <div>

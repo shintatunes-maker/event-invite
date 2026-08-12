@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteEvent, getCounts, getEvent, updateEvent } from "@/lib/db";
 import { getAdminToken, requireEventAdmin } from "@/lib/auth";
+import { parsePackingListInput } from "@/lib/packingList";
 import { toPublicEvent } from "@/lib/publicEvent";
 import { THEME_REGISTRY } from "@/lib/themes";
 import type { EventTheme } from "@/lib/types";
@@ -47,6 +48,7 @@ export async function PATCH(
     organizerName,
     rsvpDeadline,
     venueArea,
+    packingList,
   } = body as Record<string, unknown>;
 
   if (theme !== undefined && !THEMES.includes(theme as EventTheme)) {
@@ -79,6 +81,7 @@ export async function PATCH(
       typeof rsvpDeadline === "string" ? rsvpDeadline.trim() : undefined,
     venueArea:
       typeof venueArea === "string" ? venueArea.trim() : undefined,
+    packingList: parsePackingListInput(packingList),
   });
 
   return NextResponse.json({ event: toPublicEvent(updated!) });

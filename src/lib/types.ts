@@ -40,6 +40,10 @@ export interface EventRecord {
   // Optional area hint (e.g. "渋谷") used to build the "find a venue" link
   // when location is left blank.
   venueArea: string;
+  // Packing checklist items, shown on the invite page. Starts from the
+  // theme's default (see src/lib/themes/registry.ts) but the organizer can
+  // freely add/remove items in the create/edit form.
+  packingList: string[];
 }
 
 // Safe to expose to anyone with the invite link.
@@ -71,6 +75,7 @@ export interface CreateEventInput {
   creatorId?: string;
   rsvpDeadline?: string;
   venueArea?: string;
+  packingList?: string[];
 }
 
 export interface AnalyticsSummary {
@@ -92,4 +97,5 @@ export interface UpdateEventInput {
   organizerName?: string;
   rsvpDeadline?: string;
   venueArea?: string;
+  packingList?: string[];
 }
