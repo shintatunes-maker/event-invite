@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
 import { getOrCreateAnonId } from "@/lib/anonId";
+import { formatEventOgDescription } from "@/lib/format";
+import { canUseWebShare, shareInvite } from "@/lib/share";
 import { THEME_OPTIONS } from "@/lib/themeOptions";
 import type { EventTheme } from "@/lib/types";
 
@@ -28,6 +30,11 @@ export default function CreatePage() {
   const [created, setCreated] = useState<CreatedEvent | null>(null);
   const [copiedShare, setCopiedShare] = useState(false);
   const [copiedManage, setCopiedManage] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    setCanShare(canUseWebShare());
+  }, []);
 
   const shareUrl =
     created && typeof window !== "undefined"
@@ -87,6 +94,15 @@ export default function CreatePage() {
     setCopiedManage(false);
   }
 
+  async function handleShare() {
+    if (!created) return;
+    await shareInvite({
+      title: title.trim() || "イベント招待",
+      text: formatEventOgDescription(date, time, location.trim()),
+      url: shareUrl,
+    });
+  }
+
   async function copyText(
     text: string,
     setCopied: (v: boolean) => void,
@@ -118,6 +134,14 @@ export default function CreatePage() {
           </div>
 
           <div className="flex flex-col gap-2 mb-6">
+            {canShare && (
+              <button
+                onClick={handleShare}
+                className="w-full rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white py-2.5 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition"
+              >
+                LINEなどでシェアする
+              </button>
+            )}
             <button
               onClick={() => copyText(shareUrl, setCopiedShare)}
               className="w-full rounded-xl bg-neutral-900 text-white py-2.5 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition"

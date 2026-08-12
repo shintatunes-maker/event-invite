@@ -4,8 +4,9 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
-import { formatEventDate } from "@/lib/format";
+import { formatEventDate, formatEventOgDescription } from "@/lib/format";
 import { WATERMARK_REMOVAL_PRICE_JPY } from "@/lib/pricing";
+import { canUseWebShare, shareInvite } from "@/lib/share";
 import type { PublicEventRecord, ResponseRecord, RsvpCounts } from "@/lib/types";
 
 const STATUS_STYLES: Record<
@@ -53,6 +54,11 @@ export default function ManagePage() {
     type: "success" | "info";
     text: string;
   } | null>(null);
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    setCanShare(canUseWebShare());
+  }, []);
 
   async function load() {
     setLoading(true);
@@ -169,6 +175,15 @@ export default function ManagePage() {
     }
   }
 
+  async function handleShare() {
+    if (!event || typeof window === "undefined") return;
+    await shareInvite({
+      title: event.title,
+      text: formatEventOgDescription(event.date, event.time, event.location),
+      url: `${window.location.origin}/event/${params.id}`,
+    });
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-neutral-50 flex items-center justify-center px-4">
@@ -231,6 +246,14 @@ export default function ManagePage() {
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
+          {canShare && (
+            <button
+              onClick={handleShare}
+              className="rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:-translate-y-0.5 hover:shadow-md transition"
+            >
+              招待URLをシェア
+            </button>
+          )}
           <Link
             href={`/event/${params.id}`}
             target="_blank"
