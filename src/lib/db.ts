@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import { createClient } from "@libsql/client";
 import { mkdirSync } from "fs";
 import path from "path";
+import { THEME_REGISTRY } from "./themes";
 import type {
   AnalyticsSummary,
   CreateEventInput,
@@ -374,7 +375,9 @@ export async function getAnalyticsSummary(): Promise<AnalyticsSummary> {
     (totalResult.rows[0] as unknown as { c: number } | undefined)?.c ?? 0,
   );
 
-  const themeCounts: Record<EventTheme, number> = { birthday: 0, drinking: 0 };
+  const themeCounts = Object.fromEntries(
+    THEME_REGISTRY.map((t) => [t.id, 0]),
+  ) as Record<EventTheme, number>;
   for (const row of themeResult.rows as unknown as {
     theme: EventTheme;
     c: number;

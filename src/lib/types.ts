@@ -1,4 +1,19 @@
-export type EventTheme = "birthday" | "drinking";
+export type EventTheme =
+  // 飲み会・パーティー系
+  | "birthday"
+  | "drinking"
+  | "farewell"
+  | "ladies"
+  | "reunion"
+  | "housewarming"
+  // スポーツ・アクティビティ系
+  | "running"
+  | "futsal"
+  | "hiking"
+  | "golf"
+  | "bbq"
+  // ウェルネス系
+  | "wellness";
 
 export type RsvpStatus = "yes" | "maybe" | "no";
 

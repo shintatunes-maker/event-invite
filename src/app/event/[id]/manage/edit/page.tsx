@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
-import { THEME_OPTIONS } from "@/lib/themeOptions";
+import ThemePicker from "@/components/ThemePicker";
 import type { EventTheme } from "@/lib/types";
 
 const inputClass =
@@ -155,40 +155,7 @@ export default function EditEventPage() {
           onSubmit={handleSubmit}
           className="space-y-6 rounded-2xl bg-white shadow-sm p-6 sm:p-8"
         >
-          <div>
-            <span className="block text-sm font-semibold text-neutral-700 mb-2">
-              テーマを選択
-            </span>
-            <div className="grid grid-cols-2 gap-3">
-              {THEME_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setTheme(opt.value)}
-                  className={`relative text-left rounded-xl border-2 overflow-hidden transition hover:-translate-y-0.5 hover:shadow-md ${
-                    theme === opt.value
-                      ? "border-neutral-900 shadow-sm"
-                      : "border-transparent"
-                  }`}
-                >
-                  {theme === opt.value && (
-                    <span className="absolute top-2 right-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-neutral-900 text-[10px] text-white">
-                      ✓
-                    </span>
-                  )}
-                  <div className={`h-14 ${opt.preview}`} />
-                  <div className="p-3 bg-white">
-                    <p className="font-semibold text-sm text-neutral-900">
-                      {opt.emoji} {opt.label}
-                    </p>
-                    <p className="text-xs text-neutral-500 mt-0.5">
-                      {opt.desc}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+          <ThemePicker value={theme} onChange={setTheme} />
 
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-1">

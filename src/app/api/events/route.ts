@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEvent } from "@/lib/db";
+import { THEME_REGISTRY } from "@/lib/themes";
 import type { EventTheme } from "@/lib/types";
 
-const THEMES: EventTheme[] = ["birthday", "drinking"];
+const THEMES: EventTheme[] = THEME_REGISTRY.map((t) => t.id);
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);

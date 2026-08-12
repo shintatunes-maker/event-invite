@@ -16,21 +16,48 @@ const STATUS_OPTIONS: { value: RsvpStatus; label: string; emoji: string }[] = [
   { value: "no", label: "不参加", emoji: "🙅" },
 ];
 
-const THEME_STYLES: Record<
-  EventTheme,
-  {
-    card: string;
-    label: string;
-    input: string;
-    countBadge: (status: RsvpStatus) => string;
-    selectedButton: (status: RsvpStatus) => string;
-    unselectedButton: string;
-    submitButton: string;
-    error: string;
-    success: string;
-    link: string;
-  }
-> = {
+interface ThemeFormStyle {
+  card: string;
+  label: string;
+  input: string;
+  countBadge: (status: RsvpStatus) => string;
+  selectedButton: (status: RsvpStatus) => string;
+  unselectedButton: string;
+  submitButton: string;
+  error: string;
+  success: string;
+  link: string;
+}
+
+// Themes without a bespoke design yet (see src/lib/themes/registry.ts)
+// fall back to this neutral style until one is built.
+const DEFAULT_THEME_STYLE: ThemeFormStyle = {
+  card: "bg-white/90 text-neutral-900",
+  label: "text-neutral-700",
+  input:
+    "bg-white border border-neutral-300 text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:ring-neutral-300",
+  countBadge: (status) =>
+    status === "yes"
+      ? "bg-emerald-100 text-emerald-700"
+      : status === "maybe"
+        ? "bg-amber-100 text-amber-700"
+        : "bg-neutral-200 text-neutral-600",
+  selectedButton: (status) =>
+    status === "yes"
+      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-300/50"
+      : status === "maybe"
+        ? "bg-amber-500 text-white shadow-lg shadow-amber-300/50"
+        : "bg-neutral-500 text-white shadow-lg shadow-neutral-300/50",
+  unselectedButton:
+    "bg-white text-neutral-600 border border-neutral-300 hover:bg-neutral-50",
+  submitButton:
+    "bg-neutral-900 text-white hover:bg-neutral-700 disabled:opacity-50",
+  error: "text-red-500",
+  success: "text-neutral-700",
+  link: "text-neutral-700 underline underline-offset-2",
+};
+
+const THEME_STYLES: Partial<Record<EventTheme, ThemeFormStyle>> = {
   birthday: {
     card: "bg-white/90 text-purple-950",
     label: "text-purple-900",
@@ -88,7 +115,7 @@ export default function RsvpForm({
   theme,
   initialCounts,
 }: RsvpFormProps) {
-  const styles = THEME_STYLES[theme];
+  const styles = THEME_STYLES[theme] ?? DEFAULT_THEME_STYLE;
   const [name, setName] = useState("");
   const [status, setStatus] = useState<RsvpStatus | null>(null);
   const [comment, setComment] = useState("");

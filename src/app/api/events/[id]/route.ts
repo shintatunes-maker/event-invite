@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { deleteEvent, getCounts, getEvent, updateEvent } from "@/lib/db";
 import { getAdminToken, requireEventAdmin } from "@/lib/auth";
 import { toPublicEvent } from "@/lib/publicEvent";
+import { THEME_REGISTRY } from "@/lib/themes";
 import type { EventTheme } from "@/lib/types";
 
-const THEMES: EventTheme[] = ["birthday", "drinking"];
+const THEMES: EventTheme[] = THEME_REGISTRY.map((t) => t.id);
 
 export async function GET(
   _req: NextRequest,

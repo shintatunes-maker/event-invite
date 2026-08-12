@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
-import { THEME_OPTIONS } from "@/lib/themeOptions";
+import { THEME_REGISTRY } from "@/lib/themes";
 import type { AnalyticsSummary } from "@/lib/types";
 
 const TOKEN_STORAGE_KEY = "event-invite:analytics-token";
@@ -139,14 +139,15 @@ export default function AnalyticsPage() {
             テーマ別の選択割合
           </p>
           <div className="space-y-3">
-            {THEME_OPTIONS.map((opt) => {
-              const count = summary.themeCounts[opt.value];
+            {THEME_REGISTRY.map((t, i) => {
+              const count = summary.themeCounts[t.id];
               const pct = Math.round((count / themeTotal) * 100);
+              const barColor = i % 2 === 0 ? "bg-pink-400" : "bg-neutral-700";
               return (
-                <div key={opt.value}>
+                <div key={t.id}>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="font-semibold text-neutral-700">
-                      {opt.emoji} {opt.label}
+                      {t.emoji} {t.label}
                     </span>
                     <span className="text-neutral-500">
                       {count}件 ({pct}%)
@@ -154,7 +155,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="h-2 rounded-full bg-neutral-100 overflow-hidden">
                     <div
-                      className={`h-full ${opt.value === "birthday" ? "bg-pink-400" : "bg-neutral-700"}`}
+                      className={`h-full ${barColor}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
