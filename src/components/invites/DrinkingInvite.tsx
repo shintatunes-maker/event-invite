@@ -1,5 +1,6 @@
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
+import VenueSearchButton from "@/components/VenueSearchButton";
 import Watermark from "@/components/Watermark";
 import { formatEventDate } from "@/lib/format";
 import type { PublicEventRecord, RsvpCounts } from "@/lib/types";
@@ -73,7 +74,13 @@ export default function DrinkingInvite({ event, counts }: Props) {
             </div>
             <div className="flex items-center gap-3">
               <dt className="text-xl">📍</dt>
-              <dd className="font-semibold">{event.location}</dd>
+              <dd className="font-semibold">
+                {event.location ? (
+                  event.location
+                ) : (
+                  <VenueSearchButton theme="drinking" area={event.venueArea} />
+                )}
+              </dd>
             </div>
           </dl>
           {event.description && (

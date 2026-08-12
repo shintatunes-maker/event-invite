@@ -45,6 +45,7 @@ export async function PATCH(
     description,
     organizerName,
     rsvpDeadline,
+    venueArea,
   } = body as Record<string, unknown>;
 
   if (theme !== undefined && !THEMES.includes(theme as EventTheme)) {
@@ -59,10 +60,7 @@ export async function PATCH(
   if (time !== undefined && (typeof time !== "string" || !time.trim())) {
     return NextResponse.json({ error: "invalid time" }, { status: 400 });
   }
-  if (
-    location !== undefined &&
-    (typeof location !== "string" || !location.trim())
-  ) {
+  if (location !== undefined && typeof location !== "string") {
     return NextResponse.json({ error: "invalid location" }, { status: 400 });
   }
 
@@ -78,6 +76,8 @@ export async function PATCH(
       typeof organizerName === "string" ? organizerName.trim() : undefined,
     rsvpDeadline:
       typeof rsvpDeadline === "string" ? rsvpDeadline.trim() : undefined,
+    venueArea:
+      typeof venueArea === "string" ? venueArea.trim() : undefined,
   });
 
   return NextResponse.json({ event: toPublicEvent(updated!) });

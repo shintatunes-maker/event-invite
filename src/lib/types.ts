@@ -22,6 +22,9 @@ export interface EventRecord {
   creatorId: string;
   // Optional RSVP deadline, YYYY-MM-DD. Empty string means unset.
   rsvpDeadline: string;
+  // Optional area hint (e.g. "渋谷") used to build the "find a venue" link
+  // when location is left blank.
+  venueArea: string;
 }
 
 // Safe to expose to anyone with the invite link.
@@ -52,6 +55,7 @@ export interface CreateEventInput {
   organizerName?: string;
   creatorId?: string;
   rsvpDeadline?: string;
+  venueArea?: string;
 }
 
 export interface AnalyticsSummary {
@@ -72,4 +76,5 @@ export interface UpdateEventInput {
   description?: string;
   organizerName?: string;
   rsvpDeadline?: string;
+  venueArea?: string;
 }

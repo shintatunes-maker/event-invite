@@ -29,7 +29,8 @@ export function formatEventOgDescription(
   time: string,
   location: string,
 ): string {
-  return `${formatEventDateShort(date)} ${time}〜 / ${location}`;
+  const when = `${formatEventDateShort(date)} ${time}〜`;
+  return location.trim() ? `${when} / ${location.trim()}` : when;
 }
 
 export interface RsvpDeadlineInfo {

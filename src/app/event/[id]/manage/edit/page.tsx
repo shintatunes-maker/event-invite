@@ -24,6 +24,7 @@ export default function EditEventPage() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [location, setLocation] = useState("");
+  const [venueArea, setVenueArea] = useState("");
   const [rsvpDeadline, setRsvpDeadline] = useState("");
   const [description, setDescription] = useState("");
   const [organizerName, setOrganizerName] = useState("");
@@ -53,6 +54,7 @@ export default function EditEventPage() {
         setDate(event.date);
         setTime(event.time);
         setLocation(event.location);
+        setVenueArea(event.venueArea ?? "");
         setRsvpDeadline(event.rsvpDeadline ?? "");
         setDescription(event.description);
         setOrganizerName(event.organizerName);
@@ -72,8 +74,8 @@ export default function EditEventPage() {
     e.preventDefault();
     setError(null);
 
-    if (!title.trim() || !date || !time || !location.trim()) {
-      setError("イベント名・日付・時間・場所は必須です");
+    if (!title.trim() || !date || !time) {
+      setError("イベント名・日付・時間は必須です");
       return;
     }
 
@@ -91,6 +93,7 @@ export default function EditEventPage() {
           date,
           time,
           location: location.trim(),
+          venueArea: venueArea.trim(),
           description: description.trim(),
           organizerName: organizerName.trim(),
           rsvpDeadline,
@@ -228,7 +231,7 @@ export default function EditEventPage() {
 
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-1">
-              場所
+              場所(任意)
             </label>
             <input
               type="text"
@@ -237,7 +240,29 @@ export default function EditEventPage() {
               className={inputClass}
               maxLength={100}
             />
+            <p className="mt-1 text-xs text-neutral-400">
+              空欄のままにすると、招待ページに「お店を探す」ボタンが表示されます
+            </p>
           </div>
+
+          {!location.trim() && (
+            <div>
+              <label className="block text-sm font-semibold text-neutral-700 mb-1">
+                エリア(任意)
+              </label>
+              <input
+                type="text"
+                value={venueArea}
+                onChange={(e) => setVenueArea(e.target.value)}
+                placeholder="渋谷"
+                className={inputClass}
+                maxLength={50}
+              />
+              <p className="mt-1 text-xs text-neutral-400">
+                「お店を探す」ボタンの検索条件に使われます
+              </p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-semibold text-neutral-700 mb-1">

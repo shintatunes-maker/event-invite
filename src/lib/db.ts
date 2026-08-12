@@ -85,6 +85,16 @@ function init(): Promise<void> {
       } catch {
         // column already exists
       }
+
+      // Migration: optional area hint used for the "find a venue" link
+      // when location is left blank.
+      try {
+        await db.execute(
+          "ALTER TABLE events ADD COLUMN venue_area TEXT NOT NULL DEFAULT '';",
+        );
+      } catch {
+        // column already exists
+      }
     })();
   }
   return ready;
@@ -113,6 +123,7 @@ interface EventRow {
   updated_at: string;
   creator_id: string;
   rsvp_deadline: string;
+  venue_area: string;
 }
 
 interface ResponseRow {
@@ -140,6 +151,7 @@ function rowToEvent(row: EventRow): EventRecord {
     updatedAt: row.updated_at,
     creatorId: row.creator_id,
     rsvpDeadline: row.rsvp_deadline,
+    venueArea: row.venue_area,
   };
 }
 
@@ -174,12 +186,13 @@ export async function createEvent(
     updated_at: now,
     creator_id: input.creatorId ?? "",
     rsvp_deadline: input.rsvpDeadline ?? "",
+    venue_area: input.venueArea ?? "",
   };
 
   await db.execute({
     sql: `INSERT INTO events
-      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id, rsvp_deadline)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, admin_token, theme, title, date, time, location, description, organizer_name, is_paid, created_at, updated_at, creator_id, rsvp_deadline, venue_area)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       row.id,
       row.admin_token,
@@ -195,6 +208,7 @@ export async function createEvent(
       row.updated_at,
       row.creator_id,
       row.rsvp_deadline,
+      row.venue_area,
     ],
   });
 
@@ -228,13 +242,14 @@ export async function updateEvent(
     description: patch.description ?? existing.description,
     organizer_name: patch.organizerName ?? existing.organizerName,
     rsvp_deadline: patch.rsvpDeadline ?? existing.rsvpDeadline,
+    venue_area: patch.venueArea ?? existing.venueArea,
   };
   const updatedAt = new Date().toISOString();
 
   await db.execute({
     sql: `UPDATE events SET
       theme = ?, title = ?, date = ?, time = ?, location = ?,
-      description = ?, organizer_name = ?, rsvp_deadline = ?, updated_at = ?
+      description = ?, organizer_name = ?, rsvp_deadline = ?, venue_area = ?, updated_at = ?
      WHERE id = ?`,
     args: [
       merged.theme,
@@ -245,6 +260,7 @@ export async function updateEvent(
       merged.description,
       merged.organizer_name,
       merged.rsvp_deadline,
+      merged.venue_area,
       updatedAt,
       id,
     ],

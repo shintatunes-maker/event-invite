@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     organizerName,
     creatorId,
     rsvpDeadline,
+    venueArea,
   } = body as Record<string, unknown>;
 
   if (typeof theme !== "string" || !THEMES.includes(theme as EventTheme)) {
@@ -35,13 +36,12 @@ export async function POST(req: NextRequest) {
   if (typeof time !== "string" || time.trim() === "") {
     return NextResponse.json({ error: "time is required" }, { status: 400 });
   }
-  if (typeof location !== "string" || location.trim() === "") {
-    return NextResponse.json(
-      { error: "location is required" },
-      { status: 400 },
-    );
+  if (location !== undefined && typeof location !== "string") {
+    return NextResponse.json({ error: "invalid location" }, { status: 400 });
   }
 
+  // Location is optional — when left blank the invite page shows a "find a
+  // venue" search link instead (see src/lib/venueSearch.ts).
   // The creation response is the only time the admin token is returned —
   // the client must persist the resulting manage URL itself.
   const event = await createEvent({
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     title: title.trim(),
     date: date.trim(),
     time: time.trim(),
-    location: location.trim(),
+    location: typeof location === "string" ? location.trim() : "",
     description: typeof description === "string" ? description.trim() : "",
     organizerName:
       typeof organizerName === "string" ? organizerName.trim() : "",
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
         : undefined,
     rsvpDeadline:
       typeof rsvpDeadline === "string" ? rsvpDeadline.trim() : undefined,
+    venueArea: typeof venueArea === "string" ? venueArea.trim() : undefined,
   });
 
   return NextResponse.json({ event }, { status: 201 });
