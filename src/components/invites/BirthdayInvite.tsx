@@ -1,4 +1,5 @@
 import Confetti from "@/components/Confetti";
+import OrganizerQuickLink from "@/components/OrganizerQuickLink";
 import RsvpDeadlineNotice from "@/components/RsvpDeadlineNotice";
 import RsvpForm from "@/components/RsvpForm";
 import VenueSearchButton from "@/components/VenueSearchButton";
@@ -80,6 +81,7 @@ export default function BirthdayInvite({ event, counts }: Props) {
       </div>
 
       {!event.isPaid && <Watermark />}
+      <OrganizerQuickLink eventId={event.id} />
     </main>
   );
 }

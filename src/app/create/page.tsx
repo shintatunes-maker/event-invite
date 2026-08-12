@@ -6,6 +6,7 @@ import Spinner from "@/components/Spinner";
 import ThemePicker from "@/components/ThemePicker";
 import { getOrCreateAnonId } from "@/lib/anonId";
 import { formatEventOgDescription } from "@/lib/format";
+import { saveOrganizerToken } from "@/lib/organizerTokens";
 import { canUseWebShare, shareInvite } from "@/lib/share";
 import type { EventTheme } from "@/lib/types";
 
@@ -79,6 +80,7 @@ export default function CreatePage() {
         throw new Error(data?.error ?? "作成に失敗しました");
       }
       setCreated({ id: data.event.id, adminToken: data.event.adminToken });
+      saveOrganizerToken(data.event.id, data.event.adminToken);
     } catch (err) {
       setError(err instanceof Error ? err.message : "作成に失敗しました");
     } finally {

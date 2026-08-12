@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Spinner from "@/components/Spinner";
 import { formatEventDate, formatEventOgDescription } from "@/lib/format";
+import { saveOrganizerToken } from "@/lib/organizerTokens";
 import { WATERMARK_REMOVAL_PRICE_JPY } from "@/lib/pricing";
 import { canUseWebShare, shareInvite } from "@/lib/share";
 import type { PublicEventRecord, ResponseRecord, RsvpCounts } from "@/lib/types";
@@ -78,6 +79,7 @@ export default function ManagePage() {
       setEvent(data.event);
       setResponses(data.responses);
       setCounts(data.counts);
+      saveOrganizerToken(params.id, token);
     } catch (err) {
       setError(err instanceof Error ? err.message : "読み込みに失敗しました");
     } finally {
