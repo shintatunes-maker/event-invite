@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import DateSelect from "@/components/DateSelect";
 import LocationAutocompleteInput from "@/components/LocationAutocompleteInput";
 import PackingListEditor from "@/components/PackingListEditor";
 import Spinner from "@/components/Spinner";
 import ThemePicker from "@/components/ThemePicker";
+import TimeSelect from "@/components/TimeSelect";
 import VenueSearchButton from "@/components/VenueSearchButton";
 import { getOrCreateAnonId } from "@/lib/anonId";
 import { formatEventOgDescription } from "@/lib/format";
@@ -261,30 +263,19 @@ export default function CreatePage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="min-w-0">
-              <label className="block text-sm font-semibold text-neutral-700 mb-1">
-                日付
-              </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-            <div className="min-w-0">
-              <label className="block text-sm font-semibold text-neutral-700 mb-1">
-                時間
-              </label>
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                step={300}
-                className={inputClass}
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              日付
+            </label>
+            <DateSelect value={date} onChange={setDate} className={inputClass} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-neutral-700 mb-1">
+              時間
+            </label>
+            <TimeSelect value={time} onChange={setTime} className={inputClass} />
+            <p className="mt-1 text-xs text-neutral-400">5分刻みで選択できます</p>
           </div>
 
           {!location.trim() && (
