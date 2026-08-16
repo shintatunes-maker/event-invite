@@ -262,7 +262,7 @@ export default function CreatePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div>
+            <div className="min-w-0">
               <label className="block text-sm font-semibold text-neutral-700 mb-1">
                 日付
               </label>
@@ -273,7 +273,7 @@ export default function CreatePage() {
                 className={inputClass}
               />
             </div>
-            <div>
+            <div className="min-w-0">
               <label className="block text-sm font-semibold text-neutral-700 mb-1">
                 時間
               </label>
@@ -281,7 +281,7 @@ export default function CreatePage() {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                step={600}
+                step={300}
                 className={inputClass}
               />
             </div>
