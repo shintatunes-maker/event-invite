@@ -261,7 +261,7 @@ export default function CreatePage() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="min-w-0">
               <label className="block text-sm font-semibold text-neutral-700 mb-1">
                 日付
